@@ -82,10 +82,26 @@ def run_dijkstra(graph, source):
     dict[node, float]
         Minimum cost from source to every node in graph.
         Unreachable nodes map to float('inf').
-
-    TODO
     """
-    pass
+    distances = {node: float('inf') for node in graph}
+    distances[source] = 0
+
+    pq = [(0, source)]
+
+    while pq:
+        current_dist, current_node = heapq.heappop(pq)
+
+        if current_dist > distances[current_node]:
+            continue
+
+        for neighbor, cost in graph[current_node]:
+            new_dist = current_dist + cost
+
+            if new_dist < distances[neighbor]:
+                distances[neighbor] = new_dist
+                heapq.heappush(pq, (new_dist, neighbor))
+
+    return distances
 
 
 def precompute_distances(graph, spawn, relics, exit_node):
