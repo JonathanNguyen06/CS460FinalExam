@@ -2,8 +2,8 @@
 CS 460 – Algorithms: Final Programming Assignment
 The Torchbearer
 
-Student Name: ___________________________
-Student ID:   ___________________________
+Student Name: Jonathan Nguyen
+Student ID:   131671537
 
 INSTRUCTIONS
 ------------
@@ -32,7 +32,6 @@ def explain_problem():
         Your Part 1 README answers, written as a string.
         Must match what you wrote in README Part 1.
 
-    TODO
     """
     return """
     A single shortest-path run from S only tells the cheapest cost from S to each location, and therefore cannot decide the optimal order in which to visit the relic chambers. 
@@ -61,6 +60,7 @@ def select_sources(spawn, relics, exit_node):
     sources = []
     seen = set()
 
+    # Prevent duplicate nodes
     for node in [spawn] + relics + [exit_node]:
         if node not in seen:
             sources.append(node)
@@ -91,12 +91,14 @@ def run_dijkstra(graph, source):
     while pq:
         current_dist, current_node = heapq.heappop(pq)
 
+        # Prevent suboptimal distances from being pushed
         if current_dist > distances[current_node]:
             continue
 
         for neighbor, cost in graph[current_node]:
             new_dist = current_dist + cost
 
+            # If current distance is shorter than stored distance, replace
             if new_dist < distances[neighbor]:
                 distances[neighbor] = new_dist
                 heapq.heappush(pq, (new_dist, neighbor))
@@ -123,6 +125,7 @@ def precompute_distances(graph, spawn, relics, exit_node):
 
     dist_table = {}
 
+    # Run dijkstra from each source
     for source in sources:
         dist_table[source] = run_dijkstra(graph, source)
 
@@ -141,9 +144,17 @@ def dijkstra_invariant_check():
         Your Part 3 README answers, written as a string.
         Must match what you wrote in README Part 3.
 
-    TODO
     """
-    return "TODO"
+    return ("If a node, v, is in S, dist[v] is the true shortest-path distance from the source. "
+            "If a node, u, is not in S, dist[u] is the current shortest-path distance discovered from the source."
+            "Before iteration 1, the only vertex finalized in S is the source node, x, with a distance of 0. "
+            "This holds true globally, so the invariant holds true through initialization."
+            "Finalizing the min-dist node is always correct because any other alternative path through another node "
+            "cannot produce a shorter path. This is held true by the fact that all edge weights are nonnegative because "
+            "if some alternative path through another node is the same length as the min-dist, traveling along an extra "
+            "edge cannot make the path shorter."
+            "The invariant guarantees that when the algorithm ends, S holds the true shortest-path distance for every reachable node."
+            "This matters for the route planner because having incorrect distances can affect the routing decisions and produce a sub-optimal route.")
 
 
 # =============================================================================
@@ -158,9 +169,18 @@ def explain_search():
         Your Part 4 README answers, written as a string.
         Must match what you wrote in README Part 4.
 
-    TODO
     """
-    return "TODO"
+    return ("Greedy fails in the case that choosing the nearest relic can ignore a shorter overall route later."
+            "S --> B = 1, S --> C = 2, S --> D = 2"
+            "B --> C = 100, B --> D = 100"
+            "C --> D = 1, C --> B = 1, C --> T = 1"
+            "D --> B = 1, D --> T = 1"
+            "Greedy chooses B from S first because it is the closest relic."
+            "Optimal chooses C first."
+            "Greedy loses because although B is the locally optimal choice, traversing from B to other nodes is "
+            "extremely expensive. Optimal chooses C and has access to the cheapest overall path."
+            "The algorithm must explore different relic visit order choices because the cheapest overall route "
+            "depends on the order, not just the length of the paths.")
 
 
 # =============================================================================
@@ -184,10 +204,23 @@ def find_optimal_route(dist_table, spawn, relics, exit_node):
     tuple[float, list[node]]
         (minimum_fuel_cost, ordered_relic_list)
         Returns (float('inf'), []) if no valid route exists.
-
-    TODO
     """
-    pass
+    relics_remaining = set(relics)
+    relics_visited_order = []
+
+    best = [float('inf'), []]
+
+    _explore(
+        dist_table,
+        spawn,
+        relics_remaining,
+        relics_visited_order,
+        0,
+        exit_node,
+        best
+    )
+
+    return best[0], best[1]
 
 
 def _explore(dist_table, current_loc, relics_remaining, relics_visited_order,
@@ -212,14 +245,56 @@ def _explore(dist_table, current_loc, relics_remaining, relics_visited_order,
     None
         Updates best in place.
 
-    TODO
     Implement: base case, pruning, recursive case, backtracking.
 
     REQUIRED: Add a 1-2 sentence comment near your pruning condition
     explaining why it is safe (cannot skip the optimal solution).
     This comment is graded.
     """
-    pass
+    # Pruning: if this partial route already costs at least as much as the
+    # best complete route found so far, adding more nonnegative edge costs
+    # cannot make it better. Therefore, this branch cannot contain the optimal route.
+    if cost_so_far >= best[0]:
+        return
+
+    # Base case
+    if len(relics_remaining) == 0:
+        exit_cost = dist_table[current_loc].get(exit_node, float('inf'))
+
+        if exit_cost == float('inf'):
+            return
+
+        total_cost = cost_so_far + exit_cost
+
+        if total_cost < best[0]:
+            best[0] = total_cost
+            best[1] = relics_visited_order.copy()
+
+        return
+
+    # Recursive case
+    for relic in list(relics_remaining):
+        travel_cost = dist_table[current_loc].get(relic, float('inf'))
+
+        if travel_cost == float('inf'):
+            continue
+
+        relics_remaining.remove(relic)
+        relics_visited_order.append(relic)
+
+        _explore(
+            dist_table,
+            relic,
+            relics_remaining,
+            relics_visited_order,
+            cost_so_far + travel_cost,
+            exit_node,
+            best
+        )
+
+        # Backtracking
+        relics_visited_order.pop()
+        relics_remaining.add(relic)
 
 
 # =============================================================================
