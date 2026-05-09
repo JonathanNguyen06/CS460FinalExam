@@ -251,10 +251,34 @@ def _explore(dist_table, current_loc, relics_remaining, relics_visited_order,
     explaining why it is safe (cannot skip the optimal solution).
     This comment is graded.
     """
+
+    def lower_bound_remaining(dist_table, current_loc, relics_remaining, exit_node):
+        if len(relics_remaining) == 0:
+            return dist_table[current_loc].get(exit_node, float('inf'))
+
+        cheapest_next = min(
+            dist_table[current_loc].get(relic, float('inf'))
+            for relic in relics_remaining
+        )
+
+        cheapest_exit = min(
+            dist_table[relic].get(exit_node, float('inf'))
+            for relic in relics_remaining
+        )
+
+        return cheapest_next + cheapest_exit
+
+    lower_bound = lower_bound_remaining(
+        dist_table,
+        current_loc,
+        relics_remaining,
+        exit_node
+    )
+
     # Pruning: if this partial route already costs at least as much as the
     # best complete route found so far, adding more nonnegative edge costs
     # cannot make it better. Therefore, this branch cannot contain the optimal route.
-    if cost_so_far >= best[0]:
+    if cost_so_far + lower_bound >= best[0]:
         return
 
     # Base case
@@ -316,9 +340,10 @@ def solve(graph, spawn, relics, exit_node):
         (minimum_fuel_cost, ordered_relic_list)
         Returns (float('inf'), []) if no valid route exists.
 
-    TODO
     """
-    pass
+    dist_table = precompute_distances(graph, spawn, relics, exit_node)
+
+    return find_optimal_route(dist_table, spawn, relics, exit_node)
 
 
 # =============================================================================

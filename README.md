@@ -141,30 +141,25 @@ _This matters for the route planner because having incorrect distances can affec
 
 ### Part 6a: Best-So-Far Tracking
 
-> Three bullets.
 
-- **What is tracked:** _Your answer here._
-- **When it is used:** _Your answer here._
-- **What it allows the algorithm to skip:** _Your answer here._
+- **What is tracked:** _Cost so far._
+- **When it is used:** _It is used at the beginning of every recursive call of 'explore'._
+- **What it allows the algorithm to skip:** _This allows the algorithm to skip paths that have a higher cost than what is already discovered._
 
 ### Part 6b: Lower Bound Estimation
 
-> Three bullets.
-
-- **What information is available at the current state:** _Your answer here._
-- **What the lower bound accounts for:** _Your answer here._
-- **Why it never overestimates:** _Your answer here._
+- **What information is available at the current state:** _The current location, the set of remaining relics, and the precomputed shortest distances between all relevant nodes._
+- **What the lower bound accounts for:** _The lower bound accounts for the minimum possible additional cost by considering the cheapest distances needed to visit all remaining relics and exit node._
+- **Why it never overestimates:** _This never overestimates because it is based on shortest-path distances without considering ordering._
 
 ### Part 6c: Pruning Correctness
 
-> One to two bullets. Explain why pruning is safe.
 
-- _Your answer here._
+- _Pruning is safe and guaranteed to not discard the optimal route because pruning checks whether the current observed route is equal to or greater than the currently stored distance. Therefore, it will only finalize the best distance if the current distance is shorter._
 
 ---
 
 ## References
 
-> Bullet list. If none beyond lecture notes, write that.
 
-- _Your references here._
+- _Lecture notes._

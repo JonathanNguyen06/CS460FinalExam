@@ -26,33 +26,34 @@ so I had to store a copy of it when updating the best solution._
 
 ---
 
-## Entry 3 – [Date]: [Short description]
+## Entry 3 – [5/9]: Lower Bound Pruning
 
-_Your entry here._
-
----
-
-## Entry 4 – [Date]: Post-Implementation Reflection
-
-> Required. Written after your implementation is complete. Describe what you would
-> change or improve given more time.
-
-_Your entry here._
+_Improved 'explore' by adding a lower-bound pruning check. The earlier version only pruned when the cost so far
+was already greater than or equal to the best complete solution. I added a helper function to estimate a safer
+lower bound using the cheapest possible move._
 
 ---
 
-## Final Entry – [Date]: Time Estimate
+## Entry 4 – [5/9]: Post-Implementation Reflection
 
-> Required. Estimate minutes spent per part. Honesty is expected; accuracy is not graded.
 
-| Part | Estimated Hours |
-|---|---|
-| Part 1: Problem Analysis | |
-| Part 2: Precomputation Design | |
-| Part 3: Algorithm Correctness | |
-| Part 4: Search Design | |
-| Part 5: State and Search Space | |
-| Part 6: Pruning | |
-| Part 7: Implementation | |
-| README and DEVLOG writing | |
-| **Total** | |
+_There isn't anything in particular I would improve with my code besides checking specific edge cases. While
+more common edge cases like unreachable nodes are addressed in my code, there may be certain cases, like duplicate
+nodes or nodes that only appear as neighbors instead of keys, that aren't addressed in my code._
+
+---
+
+## Final Entry – [5/9]: Time Estimate
+
+
+| Part                           | Estimated Hours |
+|--------------------------------|-----------------|
+| Part 1: Problem Analysis       | 0.5             |
+| Part 2: Precomputation Design  | 1               |
+| Part 3: Algorithm Correctness  | 0.5             |
+| Part 4: Search Design          | 0.5             |
+| Part 5: State and Search Space | 3               |
+| Part 6: Pruning                | 1               |
+| Part 7: Implementation         | 1               |
+| README and DEVLOG writing      | 1.5             |
+| **Total**                      | 9               |
